@@ -6,7 +6,7 @@ export const globalStyle = StyleSheet.create({
     container: {
         backgroundColor: colors.bgcolor,
         padding: 20,
-        paddingTop: Platform.OS === 'ios' ? 42 : 32
+        paddingTop: Platform.OS === 'ios' ? 52 : 42
     },
     row: {
         flexDirection: 'row',
@@ -21,13 +21,19 @@ export const globalStyle = StyleSheet.create({
         color: colors.text,
 
     },
-    inputContainer:{
-        backgroundColor:colors.gray,
-        borderRadius:12,
-        paddingHorizontal:Platform.OS ==='ios'?12:10,
-        paddingVertical:Platform.OS ==='ios'?12:10,
+    inputContainer: {
+        backgroundColor: colors.gray,
+        borderRadius: 12,
+        paddingHorizontal: Platform.OS === 'ios' ? 12 : 10,
+        paddingVertical: Platform.OS === 'ios' ? 12 : 10,
     },
     section: {
         marginBottom: 16,
     },
+    tag: {
+        paddingHorizontal: 20,
+        paddingVertical: Platform.OS === 'ios' ? 6 : 4,
+        borderRadius: 100,
+        backgroundColor: colors.blue
+    }
 })

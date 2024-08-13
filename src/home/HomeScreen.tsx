@@ -9,14 +9,18 @@ import { fontFamily } from '../constants/fontFamilies'
 import TitleComponent from '../components/TitleComponent'
 import { colors } from '../constants/colors'
 import CardComponent from '../components/CardComponent'
-
+import { Element4, Notification, SearchNormal1 } from 'iconsax-react-native'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import TagComponent from '../components/TagComponent'
+import SpaceComponent from '../components/SpaceComponent'
 const HomeScreen = () => {
   return (
     <Container>
       <SectionComponent>
         <RowComponent justify='space-between'>
-          <TextComponent text='' />
-          <TextComponent text='' />
+          <Element4 size={24} color={colors.desc} />
+          <Notification size={24} color={colors.desc} />
+
         </RowComponent>
       </SectionComponent>
       <SectionComponent>
@@ -27,24 +31,27 @@ const HomeScreen = () => {
       </SectionComponent>
       <SectionComponent>
         <RowComponent styles={
-        [globalStyle.inputContainer]
-        } onPress={()=>console.log('helo')} >
-           <TextComponent text='Search' />
-           <Text>1</Text>
+          [globalStyle.inputContainer]
+        } onPress={() => console.log('helo')} >
+          <TextComponent color='#696b6f' text='Search task' />
+          <SearchNormal1 size={20} color={colors.desc}/>
         </RowComponent>
       </SectionComponent>
       <SectionComponent>
         <CardComponent>
           <RowComponent>
-            <View style={{flex:1}}>
-              <TitleComponent text='Task Progress'/>
-              <TextComponent text='30/40 tasks done'/>
-              <TextComponent text='Tag Component'/>
+            <View style={{ flex: 1 }}>
+              <TitleComponent text='Task Progress' />
+              <TextComponent text='30/40 tasks done' />
+              <SpaceComponent height={12}/>
+             <RowComponent justify='flex-start'>
+             <TagComponent onPress={()=>console.log('sayhi')} text='Match 22'/>
+             </RowComponent>
             </View>
             <View >
-              <TextComponent text='abc'/>
+              <TextComponent text='abc' />
             </View>
-            
+
           </RowComponent>
         </CardComponent>
       </SectionComponent>
