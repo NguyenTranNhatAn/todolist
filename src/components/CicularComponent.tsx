@@ -6,23 +6,24 @@ import { fontFamily } from '../constants/fontFamilies'
 interface Props{
     color?:string,
     value:number,
-    maxValue:number,
+    maxValue?:number,
 }
 const CicularComponent = (props:Props) => {
     const {color,value,maxValue}=props
   return (
   <CircularProgress 
+  
   showProgressValue={false}
   title={`${value}%`}
-  titleFontSize={32}
-  
+  titleFontSize={20}
+radius={40}
   titleStyle={{
     fontFamily: fontFamily.semiBold
   }}
-  inActiveStrokeColor='bc444q'
+  inActiveStrokeColor={'#3c444a'}
   titleColor={colors.text}
   value={value} 
-  activeStrokeColor={colors.blue}/>
+  activeStrokeColor={color ?? colors.blue}/>
   )
 }
 
