@@ -3,7 +3,8 @@ export const colors = {
     gray: '#222329',
     text: '#ffffff',
     desc: '#e6e6e6',
-    blue: '#3613e0'
+    blue: '#3168e0',
+    gray2:'#696b6f'
 
 
 }

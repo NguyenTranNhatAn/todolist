@@ -13,6 +13,8 @@ import { Element4, Notification, SearchNormal1 } from 'iconsax-react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import TagComponent from '../components/TagComponent'
 import SpaceComponent from '../components/SpaceComponent'
+import CicularComponent from '../components/CicularComponent'
+import { Colors } from 'react-native/Libraries/NewAppScreen'
 const HomeScreen = () => {
   return (
     <Container>
@@ -49,7 +51,7 @@ const HomeScreen = () => {
              </RowComponent>
             </View>
             <View >
-              <TextComponent text='abc' />
+              <CicularComponent maxValue={100} color={colors.blue} value={80}/>
             </View>
 
           </RowComponent>
