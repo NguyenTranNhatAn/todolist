@@ -19,7 +19,7 @@ import CardImageComponent from '../components/CardImageComponent'
 import AvataGroup from '../components/AvataGroup'
 import ProgressBar from '../components/ProgressBarComponent'
 import ProgressBarComponet from '../components/ProgressBarComponent'
-const HomeScreen = () => {
+const HomeScreen = ({navigation}:any) => {
   return (
     <View style={{ flex: 1 }}>
       <Container>
@@ -145,6 +145,7 @@ const HomeScreen = () => {
 
       }}>
         <TouchableOpacity
+        onPress={()=>navigation.navigate('AddNewTask')}
         activeOpacity={1}
           style={[
             globalStyle.row,
