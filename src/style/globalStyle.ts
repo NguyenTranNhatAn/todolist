@@ -4,9 +4,9 @@ import { fontFamily } from "../constants/fontFamilies";
 
 export const globalStyle = StyleSheet.create({
     container: {
+        flex:1,
         backgroundColor: colors.bgcolor,
-        padding: 20,
-        paddingTop: Platform.OS === 'ios' ? 52 : 42
+       
     },
     row: {
         flexDirection: 'row',
@@ -29,6 +29,7 @@ export const globalStyle = StyleSheet.create({
     },
     section: {
         marginBottom: 16,
+        paddingHorizontal:20,
     },
     tag: {
         paddingHorizontal: 20,

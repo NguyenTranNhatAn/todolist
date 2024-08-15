@@ -11,7 +11,7 @@ interface Props{
 const Container = (props:Props) => {
     const {tilte,back,right,children}= props
   return (
-    <ScrollView style={[globalStyle.container]}>
+    <ScrollView style={[globalStyle.container,]}>
       {children}
     </ScrollView>
   )
