@@ -1,28 +1,28 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import React from 'react'
-import Container from '../components/Container'
-import { globalStyle } from '../style/globalStyle'
-import RowComponent from '../components/RowComponent'
-import SectionComponent from '../components/SectionComponent'
-import TextComponent from '../components/TextComponent'
-import { fontFamily } from '../constants/fontFamilies'
-import TitleComponent from '../components/TitleComponent'
-import { colors } from '../constants/colors'
-import CardComponent from '../components/CardComponent'
+import Container from '../../components/Container'
+import { globalStyle } from '../../style/globalStyle'
+import RowComponent from '../../components/RowComponent'
+import SectionComponent from '../../components/SectionComponent'
+import TextComponent from '../../components/TextComponent'
+import { fontFamily } from '../../constants/fontFamilies'
+import TitleComponent from '../../components/TitleComponent'
+import { colors } from '../../constants/colors'
+import CardComponent from '../../components/CardComponent'
 import { Add, Edit2, Element4, Notification, SearchNormal1 } from 'iconsax-react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import TagComponent from '../components/TagComponent'
-import SpaceComponent from '../components/SpaceComponent'
-import CicularComponent from '../components/CicularComponent'
+import TagComponent from '../../components/TagComponent'
+import SpaceComponent from '../../components/SpaceComponent'
+import CicularComponent from '../../components/CicularComponent'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
-import CardImageComponent from '../components/CardImageComponent'
-import AvataGroup from '../components/AvataGroup'
-import ProgressBar from '../components/ProgressBarComponent'
-import ProgressBarComponet from '../components/ProgressBarComponent'
-const HomeScreen = ({navigation}:any) => {
+import CardImageComponent from '../../components/CardImageComponent'
+import AvataGroup from '../../components/AvataGroup'
+import ProgressBar from '../../components/ProgressBarComponent'
+import ProgressBarComponet from '../../components/ProgressBarComponent'
+const HomeScreen = ({ navigation }: any) => {
   return (
-    <View style={{ flex: 1 }}>
-      <Container>
+    <View  style={{ flex: 1 }}>
+      <Container isScroll >
         <SectionComponent>
           <RowComponent justify='space-between'>
             <Element4 size={24} color={colors.desc} />
@@ -31,7 +31,7 @@ const HomeScreen = ({navigation}:any) => {
           </RowComponent>
         </SectionComponent>
         <SectionComponent>
-          <TextComponent text='Hi, Json' />
+          <TextComponent  text='Hi, Json' />
           <TitleComponent
             text='Let Productive Today'
           />
@@ -39,7 +39,7 @@ const HomeScreen = ({navigation}:any) => {
         <SectionComponent>
           <RowComponent styles={
             [globalStyle.inputContainer]
-          } onPress={() => console.log('helo')} >
+          } onPress={() => navigation.navigate('SearchScreen')} >
             <TextComponent color='#696b6f' text='Search task' />
             <SearchNormal1 size={20} color={colors.desc} />
           </RowComponent>
@@ -145,8 +145,8 @@ const HomeScreen = ({navigation}:any) => {
 
       }}>
         <TouchableOpacity
-        onPress={()=>navigation.navigate('AddNewTask')}
-        activeOpacity={1}
+          onPress={() => navigation.navigate('AddNewTask')}
+          activeOpacity={1}
           style={[
             globalStyle.row,
             {

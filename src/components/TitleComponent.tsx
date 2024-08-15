@@ -9,12 +9,13 @@ interface Props{
     font?:string,
     size?:number,
     color?:string,
+    flex?:number
 }
 const TitleComponent = (props:Props) => {
-    const {text,font,size,color}=props;
+    const {text,flex,font,size,color}=props;
   return (
-  <TextComponent text={text} font={font ?? fontFamily.semiBold} color={color} size={size??20}/>
-  )
+  <TextComponent flex={flex??1} text={text} font={font ?? fontFamily.semiBold} color={color} size={size??20}/>
+)
 }
 
 export default TitleComponent

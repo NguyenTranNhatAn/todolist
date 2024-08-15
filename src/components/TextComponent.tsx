@@ -8,21 +8,22 @@ interface Props {
     text: string,
     size?: number,
     font?: string,
-    color?:string,
-    flex?:number,
+    color?: string,
+    flex?: number,
     styles?: StyleProp<TextStyle>
-    
+
 }
 const TextComponent = (props: Props) => {
-    const { text, font, size, color,flex,styles } = props;
+    const { text, font, size, color, flex, styles } = props;
     return (
         <Text style={[globalStyle.text,
         {
-            flex:flex??1,
+           
+            flex: flex ?? 1,
             fontSize: size ?? 14,
-            fontFamily:font ?? fontFamily.regular,
+            fontFamily: font ?? fontFamily.regular,
             color: color ?? colors.desc,
-        },styles]}>
+        }, styles]}>
             {text}
         </Text>
 
