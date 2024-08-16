@@ -9,7 +9,7 @@ import { fontFamily } from '../../constants/fontFamilies'
 import TitleComponent from '../../components/TitleComponent'
 import { colors } from '../../constants/colors'
 import CardComponent from '../../components/CardComponent'
-import { Add, Edit2, Element4, Notification, SearchNormal1 } from 'iconsax-react-native'
+import { Add, Edit2, Element4, Logout, Notification, SearchNormal1 } from 'iconsax-react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import TagComponent from '../../components/TagComponent'
 import SpaceComponent from '../../components/SpaceComponent'
@@ -19,7 +19,9 @@ import CardImageComponent from '../../components/CardImageComponent'
 import AvataGroup from '../../components/AvataGroup'
 import ProgressBar from '../../components/ProgressBarComponent'
 import ProgressBarComponet from '../../components/ProgressBarComponent'
+import auth from '@react-native-firebase/auth'
 const HomeScreen = ({ navigation }: any) => {
+  const user= auth().currentUser;
   return (
     <View  style={{ flex: 1 }}>
       <Container isScroll >
@@ -31,10 +33,18 @@ const HomeScreen = ({ navigation }: any) => {
           </RowComponent>
         </SectionComponent>
         <SectionComponent>
-          <TextComponent  text='Hi, Json' />
+
+        <RowComponent>
+          <View style={{flex:1}}>
+          <TextComponent  text={`hi ${user?.email}`} />
           <TitleComponent
             text='Let Productive Today'
           />
+          </View>
+          <TouchableOpacity onPress={()=>auth().signOut()}>
+            <Logout size={22} color='coral'/>
+          </TouchableOpacity>
+        </RowComponent>
         </SectionComponent>
         <SectionComponent>
           <RowComponent styles={
