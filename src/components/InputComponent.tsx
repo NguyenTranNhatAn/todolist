@@ -25,10 +25,10 @@ const InputComponent = (props: Props) => {
             {title && <TitleComponent flex={0} text={title} />}
             <RowComponent styles={[globalStyle.inputContainer, {
                 marginTop: title ? 4 : 0,
-                minHeight: multible && numberofLine ?32 *numberofLine:32,
+                minHeight: multible && numberofLine ?32 *numberofLine:40,
                 paddingVertical:multible && numberofLine?10:0,
                 padding:multible && numberofLine?10:0,
-                 alignItems:'flex-start'
+                 alignItems:multible && numberofLine?'flex-start':'center'
 
             }]}>
                 {prefix && prefix}
@@ -37,7 +37,6 @@ const InputComponent = (props: Props) => {
                         style={[globalStyle.text, {margin:0,padding:0, flex:1, verticalAlign:multible && numberofLine?'top':'auto' }]}
                         placeholder={placeholder ?? ''}
                         placeholderTextColor='#676767'
-                        
                         value={value}
                         multiline={multible}
                         numberOfLines={numberofLine}
