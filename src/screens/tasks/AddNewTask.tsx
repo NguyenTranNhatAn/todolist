@@ -1,5 +1,5 @@
 import { View, Text, Button } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Container from '../../components/Container'
 import TextComponent from '../../components/TextComponent'
 import { TaskModel } from '../../models/TaskModel'
@@ -10,6 +10,9 @@ import { colors } from '../../constants/colors'
 import DateTimePickerComponent from '../../components/DateTimePickerComponent'
 import RowComponent from '../../components/RowComponent'
 import SpaceComponent from '../../components/SpaceComponent'
+import DropdownPicker from '../../components/DropdownPicker'
+import { SelectModel } from '../../models/SelectModel'
+import firestore from '@react-native-firebase/firestore'
 const initValue: TaskModel = {
   title: '',
   description: '',
@@ -22,7 +25,34 @@ const initValue: TaskModel = {
 }
 const AddNewTask = () => {
   const [taskDetail, setTaskDetail] = useState<TaskModel>(initValue);
-  const handleChangeValue = (id: string, value: string | Date) => {
+  const [usersSelect, setUsersSelect] = useState<SelectModel[]>([]);
+
+  useEffect(() => {
+    handleGetAllUsers();
+  }, [])
+
+  const handleGetAllUsers = async () => {
+    await firestore().collection('users').get().then(snap => {
+      if (snap.empty) {
+        console.log('Users data not found')
+      } else {
+        const items: SelectModel[] = []
+        snap.forEach(item => {
+          items.push({
+            label: item.data().name,
+            value: item.id
+          })
+
+        }
+        )
+        setUsersSelect(items)
+      }
+    }).catch(error => {
+      console.log(`Cannot get users,${error.message}`)
+    })
+  }
+
+  const handleChangeValue = (id: string, value: string | Date | string[]) => {
     const item: any = { ...taskDetail }
     item[`${id}`] = value;
     setTaskDetail(item)
@@ -73,6 +103,12 @@ const AddNewTask = () => {
           </View>
 
         </RowComponent>
+        <DropdownPicker
+          selected={taskDetail.uids}
+          items={usersSelect}
+          multible
+          onSelect={val => handleChangeValue('uids',val)}
+          title='Members' />
       </SectionComponent>
       <SectionComponent>
         <Button title='save' onPress={handleAddNewTask} />
