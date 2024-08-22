@@ -4,9 +4,12 @@ import RowComponent from './RowComponent'
 import TextComponent from './TextComponent'
 import { colors } from '../constants/colors'
 import { fontFamily } from '../constants/fontFamilies'
+interface Props{
+    uids:string[]
+}
+const AvataGroup = (props:Props) => {
+    const {uids}=props;
 
-const AvataGroup = () => {
-    const uidLength = 10;
     const imageURL = 'https://tse4.mm.bing.net/th?id=OIP.f3kBflMGXMGojAj6zhoglQHaGh&pid=Api&P=0&h=220'
     const imageStyle = {
         width: 32,
@@ -17,12 +20,12 @@ const AvataGroup = () => {
     }
     return (
         <RowComponent justify='flex-start'>
-            {Array.from({ length: uidLength }).map((item, index) =>
+            {Array.from({ length: uids.length }).map((item, index) =>
                 index < 3 &&
                 <Image key={`image${index}`} source={{ uri: imageURL }} style={[imageStyle, { marginLeft: index > 0 ? -10 : 0 }]} />
             )}
             {
-                uidLength > 5 &&
+                uids.length > 5 &&
                 <View style={[
                     imageStyle,
                     {
@@ -39,7 +42,7 @@ const AvataGroup = () => {
                         }}
                         size={12}
                         font={fontFamily.semiBold}
-                        text={`+${uidLength - 3 > 9 ? 9 : uidLength - 3}`} />
+                        text={`+${uids.length - 3 > 9 ? 9 : uids.length - 3}`} />
                 </View>
             }
         </RowComponent>

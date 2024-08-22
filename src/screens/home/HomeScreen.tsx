@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, StatusBar } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import Container from '../../components/Container'
 import { globalStyle } from '../../style/globalStyle'
 import RowComponent from '../../components/RowComponent'
@@ -20,11 +20,48 @@ import AvataGroup from '../../components/AvataGroup'
 import ProgressBar from '../../components/ProgressBarComponent'
 import ProgressBarComponet from '../../components/ProgressBarComponent'
 import auth from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore'
+import { TaskModel } from '../../models/TaskModel'
 const HomeScreen = ({ navigation }: any) => {
-  const user= auth().currentUser;
+  const user = auth().currentUser;
+  const [isLoading, setIsLoading] = useState(false);
+  const [tasks, setTasks] = useState<TaskModel[]>([]);
+
+  useEffect(() => {
+    getNewTask();
+    
+  }, [])
+
+  const getNewTask = async () => {
+    setIsLoading(true);
+    await firestore().collection('tasks').orderBy('dueDate').limitToLast(3).onSnapshot(snap => {
+      if (snap.empty) {
+        console.log('Task not found')
+        setIsLoading(false)
+      }
+      else {
+        const items: TaskModel[] = [];
+        snap.forEach((item: any) => {
+
+          items.push({
+            id: item.id,
+            ...item.data(),
+          })
+         
+        }
+        );
+        setIsLoading(false);
+        setTasks(items);
+        console.log(tasks)
+
+      }
+    })
+  }
+
   return (
-    <View  style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <Container isScroll >
+        <StatusBar barStyle={'light-content'} backgroundColor={colors.bgcolor}/>
         <SectionComponent>
           <RowComponent justify='space-between'>
             <Element4 size={24} color={colors.desc} />
@@ -34,17 +71,17 @@ const HomeScreen = ({ navigation }: any) => {
         </SectionComponent>
         <SectionComponent>
 
-        <RowComponent>
-          <View style={{flex:1}}>
-          <TextComponent  text={`hi ${user?.email}`} />
-          <TitleComponent
-            text='Let Productive Today'
-          />
-          </View>
-          <TouchableOpacity onPress={()=>auth().signOut()}>
-            <Logout size={22} color='coral'/>
-          </TouchableOpacity>
-        </RowComponent>
+          <RowComponent>
+            <View style={{ flex: 1 }}>
+              <TextComponent text={`hi ${user?.email}`} />
+              <TitleComponent
+                text='Let Productive Today'
+              />
+            </View>
+            <TouchableOpacity onPress={() => auth().signOut()}>
+              <Logout size={22} color='coral' />
+            </TouchableOpacity>
+          </RowComponent>
         </SectionComponent>
         <SectionComponent>
           <RowComponent styles={
@@ -72,57 +109,85 @@ const HomeScreen = ({ navigation }: any) => {
             </RowComponent>
           </CardComponent>
         </SectionComponent>
-        <SectionComponent>
-          <RowComponent styles={{ alignItems: 'flex-start' }}>
-            <View style={{ flex: 1 }}>
-              <CardImageComponent>
-                <TouchableOpacity style={[
-                  globalStyle.iconContainer
-                ]}
-                >
-                  <Edit2 size={20} color={colors.white} />
-                </TouchableOpacity>
-                <TitleComponent size={18} text='UX Design' />
-                <TextComponent text='Task managament mobile apps' size={13} />
-                <View style={{ marginVertical: 24 }}>
-                  <AvataGroup />
-                  <ProgressBarComponet percent='70%' color={'#0aacff'} size='large' />
+        {
+          isLoading ? <ActivityIndicator /> : tasks.length > 0
+            ?
+            <SectionComponent>
+              <RowComponent styles={{ alignItems: 'flex-start' }}>
+                <View style={{ flex: 1 }}>
+                  <CardImageComponent onPress={()=>navigation.navigate('TaskDetail',{
+                    id: tasks[0].id,                    
+                  })}>
+                    <TouchableOpacity style={[
+                      globalStyle.iconContainer
+                    ]}
+                    >
+                      <Edit2 size={20} color={colors.white} />
+                    </TouchableOpacity>
+                    <TitleComponent size={18} text={tasks[0].title} />
+                    <TextComponent line={3} text={tasks[0].description} size={13} />
+                    <View style={{ marginVertical: 24 }}>
+                      <AvataGroup uids={tasks[0].uids} />
+                      {tasks[0].progress
+                        && <ProgressBarComponet percent='70%' color={'#0aacff'} size='large' />
+                      }
+
+                    </View>
+                    <TextComponent
+                      size={12}
+                      color={colors.desc}
+
+                      text={`Due ${tasks[0].dueDate.toDate()}`} />
+                  </CardImageComponent>
                 </View>
-                <TextComponent
-                  size={12}
-                  color={colors.desc}
-                  text='Due, 2023 Match 04' />
-              </CardImageComponent>
-            </View>
-            <SpaceComponent width={16} />
-            <View style={{ flex: 1, }}>
-              <CardImageComponent color='rgba(33,150,243,0.9)'>
-                <TouchableOpacity style={[
-                  globalStyle.iconContainer
-                ]}
-                >
-                  <Edit2 size={20} color={colors.white} />
-                </TouchableOpacity>
-                <TitleComponent size={18} text='Api Payment' />
-                <AvataGroup />
-                <ProgressBarComponet percent='40%' color={'#a2f068'} />
-              </CardImageComponent>
-              <SpaceComponent height={16} />
-              <CardImageComponent color='rgba(18,181,122,0.9)'>
-                <TouchableOpacity style={[
-                  globalStyle.iconContainer
-                ]}
-                >
-                  <Edit2 size={20} color={colors.white} />
-                </TouchableOpacity>
-                <TitleComponent size={18} text='Update work' />
-                <TextComponent text='Redivion home page' size={13} />
+                <SpaceComponent width={16} />
+                <View style={{ flex: 1, }}>
+                  {
+                    tasks[1] &&
+                    <CardImageComponent onPress={()=>navigation.navigate('TaskDetail',{
+                      id: tasks[1].id, 
+                      color: 'rgba(33,150,243,0.9)'                   
+                    })} color='rgba(33,150,243,0.9)'>
+                      <TouchableOpacity style={[
+                        globalStyle.iconContainer
+                      ]}
+                      >
+                        <Edit2 size={20} color={colors.white} />
+                      </TouchableOpacity>
+                      <TitleComponent size={18} text={tasks[1].title} />
+                      {tasks[1].uids && <AvataGroup uids={tasks[1].uids} />}
+                      {tasks[1].progress &&
+                        <ProgressBarComponet percent='40%' color={'#a2f068'} />
+                      }
+                      <ProgressBarComponet percent='40%' color={'#a2f068'} />
+                    </CardImageComponent>
+                  }
+
+                  <SpaceComponent height={16} />
+                  {tasks[2] &&
+                    <CardImageComponent
+                    onPress={()=>navigation.navigate('TaskDetail',{
+                      id: tasks[2].id, 
+                      color: 'rgba(18,181,122,0.9)'                   
+                    })}
+                     color='rgba(18,181,122,0.9)'>
+                      <TouchableOpacity style={[
+                        globalStyle.iconContainer
+                      ]}
+                      >
+                        <Edit2 size={20} color={colors.white} />
+                      </TouchableOpacity>
+                      <TitleComponent size={18} text={tasks[2].title} />
+                      <TextComponent text={tasks[2].description} size={13} />
 
 
-              </CardImageComponent>
-            </View>
-          </RowComponent>
-        </SectionComponent>
+                    </CardImageComponent>}
+                </View>
+              </RowComponent>
+            </SectionComponent>
+            : <></>
+        }
+
         <SpaceComponent height={16} />
         <SectionComponent>
           <TitleComponent

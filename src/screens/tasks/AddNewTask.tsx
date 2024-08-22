@@ -1,11 +1,11 @@
-import { View, Text, Button } from 'react-native'
+import { View, Text, Button, Platform, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Container from '../../components/Container'
 import TextComponent from '../../components/TextComponent'
 import { TaskModel } from '../../models/TaskModel'
 import SectionComponent from '../../components/SectionComponent'
 import InputComponent from '../../components/InputComponent'
-import { User } from 'iconsax-react-native'
+import { AttachSquare, User } from 'iconsax-react-native'
 import { colors } from '../../constants/colors'
 import DateTimePickerComponent from '../../components/DateTimePickerComponent'
 import RowComponent from '../../components/RowComponent'
@@ -13,6 +13,12 @@ import SpaceComponent from '../../components/SpaceComponent'
 import DropdownPicker from '../../components/DropdownPicker'
 import { SelectModel } from '../../models/SelectModel'
 import firestore from '@react-native-firebase/firestore'
+import ButtonComponent from '../../components/ButtonComponent'
+import TitleComponent from '../../components/TitleComponent'
+import storage from '@react-native-firebase/storage'
+import DocumentPicker, { DocumentPickerOptions, DocumentPickerResponse } from 'react-native-document-picker'
+import RNFetchBlob from 'rn-fetch-blob'
+
 const initValue: TaskModel = {
   title: '',
   description: '',
@@ -20,13 +26,27 @@ const initValue: TaskModel = {
   start: new Date(),
   end: new Date(),
   uids: [],
-  color: '',
-  fileUrls: []
+  fileUrls: [],
 }
-const AddNewTask = () => {
+
+
+const AddNewTask = ({ navigation }: any) => {
   const [taskDetail, setTaskDetail] = useState<TaskModel>(initValue);
   const [usersSelect, setUsersSelect] = useState<SelectModel[]>([]);
+  const [attachments, setAttachments] = useState<DocumentPickerResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState('');
+  const [byteTransferented, setByteTransferented] = useState(0)
+  const [attachmentUrl, setAttachmentUrl] = useState<string[]>([]);
 
+  useEffect(() => {
+
+    if (Platform.OS === 'android') {
+
+      PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES])
+    }
+
+  }, [])
   useEffect(() => {
     handleGetAllUsers();
   }, [])
@@ -58,8 +78,64 @@ const AddNewTask = () => {
     setTaskDetail(item)
   };
   const handleAddNewTask = async () => {
-    console.log(taskDetail)
+    const data = {
+      ...taskDetail,
+      fileUrls: attachmentUrl
+    }
+    await firestore().collection('tasks').add(data).then(() => {
+      console.log('thanhcong')
+      navigation.goBack()
+    }).catch(error => console.log(error))
   }
+  const handlePickerDocument = () => {
+    DocumentPicker.pick({
+    }).then(res => {
+      setAttachments(res)
+      res.forEach(item => {
+        handleUploadFiletoStorage(item)
+      })
+    }).catch(error => {
+      console.log(error);
+    })
+  }
+  const getPath = async (file: DocumentPickerResponse) => {
+    if (Platform.OS === 'ios') {
+      return file.uri;
+    }
+    else {
+
+      return (await RNFetchBlob.fs.stat(file.uri)).path
+    }
+  }
+  const handleUploadFiletoStorage = async (item: DocumentPickerResponse) => {
+
+    const fileName = item.name ?? `file${Date.now()}`
+    console.log(item)
+    const path = `documents/${fileName}`;
+    const items = [...attachmentUrl]
+    const uri = await getPath(item);
+    const res = storage().ref(path).putFile(uri);
+    console.log(uri)
+    res.on('state_changed', snap => {
+      setStatus(snap.state);
+      setByteTransferented(snap.bytesTransferred);
+    }, (error) => {
+      console.log(error)
+    }, () => {
+      //get download url
+      storage().ref(path).getDownloadURL().then(url => {
+
+        setAttachmentUrl(items)
+      })
+    })
+    await storage().ref(path).getDownloadURL().then(url => {
+      items.push(url)
+      setAttachmentUrl(items)
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+  // console.log(attachmentUrl)
   return (
     <Container back title='add'>
       <SectionComponent>
@@ -107,11 +183,26 @@ const AddNewTask = () => {
           selected={taskDetail.uids}
           items={usersSelect}
           multible
-          onSelect={val => handleChangeValue('uids',val)}
+          onSelect={val => handleChangeValue('uids', val)}
           title='Members' />
+        <View>
+          <RowComponent onPress={handlePickerDocument} justify='flex-start'>
+
+            <TitleComponent flex={0} text='Attachments' />
+            <SpaceComponent width={8} />
+            <AttachSquare size={20} color={colors.white} />
+          </RowComponent>
+          {
+            attachments.length > 0 && attachments.map((item, index) =>
+              <RowComponent styles={{ paddingVertical: 12 }} key={`attachment${index}`}>
+                <TextComponent text={item.name ?? ''} />
+              </RowComponent>
+            )
+          }
+        </View>
       </SectionComponent>
       <SectionComponent>
-        <Button title='save' onPress={handleAddNewTask} />
+        <ButtonComponent text='save' onPress={() => handleAddNewTask()} />
       </SectionComponent>
 
     </Container>

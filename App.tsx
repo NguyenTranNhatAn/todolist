@@ -9,12 +9,10 @@ import { colors } from './src/constants/colors'
 const App = () => {
   return (
   <>
-    <SafeAreaView style={{flex:1}}>
-    <StatusBar barStyle="light-content" backgroundColor={colors.bgcolor} />
+    
      <NavigationContainer>
       <Router/>
      </NavigationContainer>
-    </SafeAreaView>
   </>
   )
 }

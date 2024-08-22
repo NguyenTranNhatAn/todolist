@@ -5,7 +5,8 @@ export const colors = {
     desc: '#e6e6e6',
     blue: '#3168e0',
     gray2:'#696b6f',
-    white:'#fafafa'
+    white:'#fafafa',
+    success:'#00733b'
 
 
 }

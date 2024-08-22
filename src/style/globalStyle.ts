@@ -49,6 +49,11 @@ export const globalStyle = StyleSheet.create({
         borderRadius:100, 
         backgroundColor:'rgba(0,0,0,0.2)',
         justifyContent:'center',
-        alignItems:'center'}
+        alignItems:'center'},
+
+    documentImg:{
+        marginHorizontal:4,
+
+    }
     
 })

@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { ReactNode } from 'react'
 import { globalStyle } from '../style/globalStyle';
 import RowComponent from './RowComponent';
@@ -20,7 +20,8 @@ const Container = (props: Props) => {
   const { title, back, right, children, isScroll } = props;
   const navigation:any= useNavigation()
   return (
-    <View style={[globalStyle.container,{flex:1}]}>
+    <SafeAreaView style={{flex:1,backgroundColor:colors.bgcolor}}>
+      <View style={[globalStyle.container,{flex:1}]}>
       <RowComponent styles={{
         paddingHorizontal: 16,
         paddingBottom: 16,
@@ -57,6 +58,7 @@ const Container = (props: Props) => {
   }
 
     </View>
+    </SafeAreaView>
   )
 }
 

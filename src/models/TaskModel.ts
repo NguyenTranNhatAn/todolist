@@ -1,11 +1,13 @@
 export interface TaskModel{
+    id?:string,
     title:string,
     description:string,
-    dueDate:Date,
-    start:Date,
-    end:Date,
+    dueDate:any,
+    start:any,
+    end:any,
     uids:string[],
-    color:string,
-    fileUrls:string[]
+    color?:string,
+    fileUrls:string[],
+    progress?:string;
 
 }

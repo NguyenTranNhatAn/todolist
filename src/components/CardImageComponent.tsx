@@ -1,13 +1,14 @@
-import { ImageBackground, StyleSheet, Text, View } from 'react-native'
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { ReactNode } from 'react'
 import { globalStyle } from '../style/globalStyle'
 interface Props{
     children:ReactNode, 
-    color?:string
+    color?:string,
+    onPress?:()=>void
 }
 const CardImageComponent = (props:Props) => {
-    const {children,color}=props
-  return (
+    const {children,color,onPress}=props;
+    const renderCard=
     <ImageBackground source={require('../../assets/images/card-bg.png')} 
     imageStyle={{borderRadius:12}}
     style={[globalStyle.card]}>
@@ -27,7 +28,7 @@ const CardImageComponent = (props:Props) => {
       {children}
       </View>
     </ImageBackground>
-  )
+  return onPress ?<TouchableOpacity onPress={onPress}>{renderCard}</TouchableOpacity>: (renderCard)
 }
 
 export default CardImageComponent

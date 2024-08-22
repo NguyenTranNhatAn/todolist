@@ -10,17 +10,19 @@ interface Props {
     font?: string,
     color?: string,
     flex?: number,
-    styles?: StyleProp<TextStyle>
+    styles?: StyleProp<TextStyle>,
+    line?:number
 
 }
 const TextComponent = (props: Props) => {
-    const { text, font, size, color, flex, styles } = props;
+    const { line,text, font, size, color, flex, styles } = props;
     return (
-        <Text style={[globalStyle.text,
+        <Text numberOfLines={line} style={[globalStyle.text,
         {
            
             flex: flex ?? 1,
             fontSize: size ?? 14,
+            textAlign:'justify',
             fontFamily: font ?? fontFamily.regular,
             color: color ?? colors.desc,
         }, styles]}>
