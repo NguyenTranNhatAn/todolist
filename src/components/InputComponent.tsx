@@ -17,10 +17,11 @@ interface Props {
     allowClear?: boolean,
     multible?: boolean,
     numberofLine?: number,
-    isPassword?: boolean
+    isPassword?: boolean,
+    color?:string
 }
 const InputComponent = (props: Props) => {
-    const { isPassword, value, onChange, placeholder, title, prefix, affix, allowClear, multible, numberofLine } = props;
+    const { isPassword, value, onChange, placeholder, title, prefix, affix, allowClear, multible, numberofLine,color } = props;
     const [showPass, setShowPass] = useState(false);
     return (
         <View style={{ marginBottom: 16, }}>
@@ -29,7 +30,8 @@ const InputComponent = (props: Props) => {
                 marginTop: title ? 4 : 0,
                 minHeight: multible && numberofLine ? 32 * numberofLine : 45,
                 paddingVertical: multible && numberofLine ? 10 : 0,
-                alignItems: multible && numberofLine ? 'flex-start' : 'center'
+                alignItems: multible && numberofLine ? 'flex-start' : 'center',
+                backgroundColor:color?? colors.gray
 
             }]}>
                 {prefix && prefix}

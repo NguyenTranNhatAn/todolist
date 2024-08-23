@@ -17,3 +17,14 @@ export interface Attachment {
     size:number,
     type?:string,
 }
+
+export interface SubStatModel {
+    createAt: number,
+    description: string,
+    id: string,
+    isComplete: boolean,
+    taskId: string,
+    title: string,
+    upDateAt: number,
+  }
+  

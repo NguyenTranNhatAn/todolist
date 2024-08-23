@@ -27,55 +27,6 @@ const UploadFileComponent = (props: Props) => {
 
 
 
-  const uploadFile = async (uri: string, fileName: string): Promise<void> => {
-    try {
-      // Đọc tệp từ URI và chuyển đổi thành dữ liệu base64
-      const fileData = await RNFetchBlob.fs.readFile(uri, 'base64');
-
-      // Đường dẫn lưu trữ trên Firebase
-      const firebasePath = `documents/${fileName}`;
-
-      // Tải lên Firebase Storage bằng putString
-      const uploadTask = storage().ref(firebasePath).putString(fileData, 'base64', { contentType: 'application/pdf' });
-
-      uploadTask.on('state_changed', snapshot => {
-        console.log(`Transferred: ${snapshot.bytesTransferred}`);
-      });
-
-      await uploadTask;
-
-      // Lấy URL tải xuống sau khi tệp đã được tải lên
-      const downloadURL = await storage().ref(firebasePath).getDownloadURL();
-      console.log('File available at:', downloadURL);
-
-    } catch (error) {
-      console.error('Error reading file or uploading:', error);
-    }
-  };
-
-  // Khi người dùng chọn tệp PDF
-  const handlePickerDocument = async (): Promise<void> => {
-    try {
-      const res: DocumentPickerResponse = await DocumentPicker.pickSingle({
-        type: [DocumentPicker.types.pdf],
-        copyTo: 'cachesDirectory',
-      });
-
-      const uri = res.uri;
-      const fileName = res.name;
-
-      // Gọi hàm upload
-      await uploadFile(uri, fileName ?? '');
-
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log('User cancelled the picker');
-      } else {
-        console.error('Unknown error:', err);
-      }
-    }
-  };
-
   useEffect(() => {
     file && handleUploadFile()
    
@@ -166,6 +117,7 @@ const UploadFileComponent = (props: Props) => {
                   flex: 1, marginRight: 12,
                 }}>
                   <Slider
+                  disabled
                     value={progressUpload}
                     trackStyle={{ height: 6, borderRadius: 100 }}
                     minimumTrackTintColor={colors.success}

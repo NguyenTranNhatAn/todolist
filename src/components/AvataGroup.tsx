@@ -6,7 +6,8 @@ import { colors } from '../constants/colors'
 import { fontFamily } from '../constants/fontFamilies'
 import AvataComponent from './AvataComponent'
 interface Props{
-    uids:string[]
+    uids:string[],
+   
 }
 const AvataGroup = (props:Props) => {
     const {uids}=props;
@@ -21,7 +22,7 @@ const AvataGroup = (props:Props) => {
     }
     return (
         <RowComponent justify='flex-start'>
-            {uids.map( (item,index) => index<3 &&<AvataComponent uid={item} index={index}/> )
+            {uids.map( (item,index) => index<3 &&<AvataComponent key={index} uid={item} index={index}/> )
             }
             {
                 uids.length > 3 &&

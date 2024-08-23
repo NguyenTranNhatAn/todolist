@@ -2,7 +2,7 @@ import { View, Text, Button, Platform, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Container from '../../components/Container'
 import TextComponent from '../../components/TextComponent'
-import { TaskModel } from '../../models/TaskModel'
+import { Attachment, TaskModel } from '../../models/TaskModel'
 import SectionComponent from '../../components/SectionComponent'
 import InputComponent from '../../components/InputComponent'
 import { AttachSquare, User } from 'iconsax-react-native'
@@ -18,6 +18,8 @@ import TitleComponent from '../../components/TitleComponent'
 import storage from '@react-native-firebase/storage'
 import DocumentPicker, { DocumentPickerOptions, DocumentPickerResponse } from 'react-native-document-picker'
 import RNFetchBlob from 'rn-fetch-blob'
+import UploadFileComponent from '../../components/UploadFileComponent'
+import { fontFamily } from '../../constants/fontFamilies'
 
 const initValue: TaskModel = {
   title: '',
@@ -30,14 +32,15 @@ const initValue: TaskModel = {
 }
 
 
-const AddNewTask = ({ navigation }: any) => {
+const AddNewTask = ({ navigation ,route}: any) => {
+
+  const { editable, task }: { editable: Boolean, task?: TaskModel } = route.params;
   const [taskDetail, setTaskDetail] = useState<TaskModel>(initValue);
   const [usersSelect, setUsersSelect] = useState<SelectModel[]>([]);
-  const [attachments, setAttachments] = useState<DocumentPickerResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState('');
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+ 
   const [byteTransferented, setByteTransferented] = useState(0)
-  const [attachmentUrl, setAttachmentUrl] = useState<string[]>([]);
+  
 
   useEffect(() => {
 
@@ -80,61 +83,14 @@ const AddNewTask = ({ navigation }: any) => {
   const handleAddNewTask = async () => {
     const data = {
       ...taskDetail,
-      fileUrls: attachmentUrl
+       attachments
     }
     await firestore().collection('tasks').add(data).then(() => {
       console.log('thanhcong')
       navigation.goBack()
     }).catch(error => console.log(error))
   }
-  const handlePickerDocument = () => {
-    DocumentPicker.pick({
-    }).then(res => {
-      setAttachments(res)
-      res.forEach(item => {
-        handleUploadFiletoStorage(item)
-      })
-    }).catch(error => {
-      console.log(error);
-    })
-  }
-  const getPath = async (file: DocumentPickerResponse) => {
-    if (Platform.OS === 'ios') {
-      return file.uri;
-    }
-    else {
 
-      return (await RNFetchBlob.fs.stat(file.uri)).path
-    }
-  }
-  const handleUploadFiletoStorage = async (item: DocumentPickerResponse) => {
-
-    const fileName = item.name ?? `file${Date.now()}`
-    console.log(item)
-    const path = `documents/${fileName}`;
-    const items = [...attachmentUrl]
-    const uri = await getPath(item);
-    const res = storage().ref(path).putFile(uri);
-    console.log(uri)
-    res.on('state_changed', snap => {
-      setStatus(snap.state);
-      setByteTransferented(snap.bytesTransferred);
-    }, (error) => {
-      console.log(error)
-    }, () => {
-      //get download url
-      storage().ref(path).getDownloadURL().then(url => {
-
-        setAttachmentUrl(items)
-      })
-    })
-    await storage().ref(path).getDownloadURL().then(url => {
-      items.push(url)
-      setAttachmentUrl(items)
-    }).catch(error => {
-      console.log(error)
-    })
-  }
   // console.log(attachmentUrl)
   return (
     <Container back title='add'>
@@ -186,11 +142,15 @@ const AddNewTask = ({ navigation }: any) => {
           onSelect={val => handleChangeValue('uids', val)}
           title='Members' />
         <View>
-          <RowComponent onPress={handlePickerDocument} justify='flex-start'>
+          <RowComponent styles={{
+            alignItems:'center',
+            justifyContent:'flex-start',
+            
+          }}  >
 
-            <TitleComponent flex={0} text='Attachments' />
+            <TextComponent size={16} font={fontFamily.bold} flex={0} text='Attachments' />
             <SpaceComponent width={8} />
-            <AttachSquare size={20} color={colors.white} />
+            <UploadFileComponent onUpload={file=>file && setAttachments([...attachments,file])}/>
           </RowComponent>
           {
             attachments.length > 0 && attachments.map((item, index) =>

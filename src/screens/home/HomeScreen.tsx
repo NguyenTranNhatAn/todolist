@@ -223,7 +223,9 @@ const HomeScreen = ({ navigation }: any) => {
 
       }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('AddNewTask')}
+          onPress={() => navigation.navigate('AddNewTask',{
+            editable:false,task:undefined
+          })}
           activeOpacity={1}
           style={[
             globalStyle.row,
