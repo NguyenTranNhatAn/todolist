@@ -4,13 +4,14 @@ import RowComponent from './RowComponent'
 import TextComponent from './TextComponent'
 import { colors } from '../constants/colors'
 import { fontFamily } from '../constants/fontFamilies'
+import AvataComponent from './AvataComponent'
 interface Props{
     uids:string[]
 }
 const AvataGroup = (props:Props) => {
     const {uids}=props;
 
-    const imageURL = 'https://tse4.mm.bing.net/th?id=OIP.f3kBflMGXMGojAj6zhoglQHaGh&pid=Api&P=0&h=220'
+  
     const imageStyle = {
         width: 32,
         height: 32,
@@ -20,13 +21,13 @@ const AvataGroup = (props:Props) => {
     }
     return (
         <RowComponent justify='flex-start'>
-            {Array.from({ length: uids.length }).map((item, index) =>
-                index < 3 &&
-                <Image key={`image${index}`} source={{ uri: imageURL }} style={[imageStyle, { marginLeft: index > 0 ? -10 : 0 }]} />
-            )}
+            {uids.map( (item,index) => index<3 &&<AvataComponent uid={item} index={index}/> )
+            }
             {
-                uids.length > 5 &&
-                <View style={[
+                uids.length > 3 &&
+                <View
+                key={'total'}
+                 style={[
                     imageStyle,
                     {
                         marginLeft: -10,
@@ -38,7 +39,7 @@ const AvataGroup = (props:Props) => {
                     <TextComponent
                         flex={0}
                         styles={{
-                            lineHeight: 19
+                            lineHeight: 13
                         }}
                         size={12}
                         font={fontFamily.semiBold}

@@ -24,7 +24,7 @@ import firestore from '@react-native-firebase/firestore'
 import { TaskModel } from '../../models/TaskModel'
 const HomeScreen = ({ navigation }: any) => {
   const user = auth().currentUser;
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<TaskModel[]>([]);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const HomeScreen = ({ navigation }: any) => {
         );
         setIsLoading(false);
         setTasks(items);
-        console.log(tasks)
+        
 
       }
     })
@@ -124,13 +124,16 @@ const HomeScreen = ({ navigation }: any) => {
                     >
                       <Edit2 size={20} color={colors.white} />
                     </TouchableOpacity>
-                    <TitleComponent size={18} text={tasks[0].title} />
-                    <TextComponent line={3} text={tasks[0].description} size={13} />
+                    <TitleComponent size={18} text={tasks[0].title??''} />
+                    <TextComponent line={3} text={tasks[0].description??''} size={13} />
                     <View style={{ marginVertical: 24 }}>
                       <AvataGroup uids={tasks[0].uids} />
-                      {tasks[0].progress
-                        && <ProgressBarComponet percent='70%' color={'#0aacff'} size='large' />
-                      }
+                      {
+                        tasks[0].progress &&
+                      (tasks[0].progress as number) >=0 ?
+                         <ProgressBarComponet percent={`${Math.floor(tasks[0].progress *100)}%`}
+                          color={'#0aacff'} size='large' />
+                      :null}
 
                     </View>
                     <TextComponent
@@ -154,12 +157,12 @@ const HomeScreen = ({ navigation }: any) => {
                       >
                         <Edit2 size={20} color={colors.white} />
                       </TouchableOpacity>
-                      <TitleComponent size={18} text={tasks[1].title} />
+                      <TitleComponent size={18} text={tasks[1].title??''} />
                       {tasks[1].uids && <AvataGroup uids={tasks[1].uids} />}
                       {tasks[1].progress &&
-                        <ProgressBarComponet percent='40%' color={'#a2f068'} />
+                   <ProgressBarComponet percent={`${Math.floor(tasks[1].progress*100)}%`} color={'#a2f068'} />
                       }
-                      <ProgressBarComponet percent='40%' color={'#a2f068'} />
+                     
                     </CardImageComponent>
                   }
 
@@ -177,8 +180,8 @@ const HomeScreen = ({ navigation }: any) => {
                       >
                         <Edit2 size={20} color={colors.white} />
                       </TouchableOpacity>
-                      <TitleComponent size={18} text={tasks[2].title} />
-                      <TextComponent text={tasks[2].description} size={13} />
+                      <TitleComponent size={18} text={tasks[2].title??''} />
+                      <TextComponent text={tasks[2].description??''} size={13} />
 
 
                     </CardImageComponent>}

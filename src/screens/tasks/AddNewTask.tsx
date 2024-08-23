@@ -26,7 +26,7 @@ const initValue: TaskModel = {
   start: new Date(),
   end: new Date(),
   uids: [],
-  fileUrls: [],
+  attachments: [],
 }
 
 
