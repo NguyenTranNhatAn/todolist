@@ -1,10 +1,11 @@
 import { View, Text, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import RowComponent from './RowComponent'
 import TextComponent from './TextComponent'
 import { colors } from '../constants/colors'
 import { fontFamily } from '../constants/fontFamilies'
 import AvataComponent from './AvataComponent'
+import firestore from '@react-native-firebase/firestore'
 interface Props{
     uids:string[],
    
@@ -12,7 +13,7 @@ interface Props{
 const AvataGroup = (props:Props) => {
     const {uids}=props;
 
-  
+   
     const imageStyle = {
         width: 32,
         height: 32,

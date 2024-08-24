@@ -29,39 +29,44 @@ const HomeScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     getNewTask();
-    
+
   }, [])
 
   const getNewTask = async () => {
     setIsLoading(true);
-    await firestore().collection('tasks').orderBy('dueDate').limitToLast(3).onSnapshot(snap => {
-      if (snap.empty) {
-        console.log('Task not found')
-        setIsLoading(false)
-      }
-      else {
-        const items: TaskModel[] = [];
-        snap.forEach((item: any) => {
+    await
+      firestore().
+        collection('tasks')
+        .where('uids', 'array-contains', user?.uid)
+        .limit(3)
+        .onSnapshot(snap => {
+          if (snap.empty) {
+            console.log('Task not found')
+            setIsLoading(false)
+          }
+          else {
+            const items: TaskModel[] = [];
+            snap.forEach((item: any) => {
 
-          items.push({
-            id: item.id,
-            ...item.data(),
-          })
-         
-        }
-        );
-        setIsLoading(false);
-        setTasks(items);
-        
+              items.push({
+                id: item.id,
+                ...item.data(),
+              })
 
-      }
-    })
+            }
+            );
+            setIsLoading(false);
+            setTasks(items);
+
+
+          }
+        })
   }
 
   return (
     <View style={{ flex: 1 }}>
       <Container isScroll >
-        <StatusBar barStyle={'light-content'} backgroundColor={colors.bgcolor}/>
+        <StatusBar barStyle={'light-content'} backgroundColor={colors.bgcolor} />
         <SectionComponent>
           <RowComponent justify='space-between'>
             <Element4 size={24} color={colors.desc} />
@@ -115,25 +120,25 @@ const HomeScreen = ({ navigation }: any) => {
             <SectionComponent>
               <RowComponent styles={{ alignItems: 'flex-start' }}>
                 <View style={{ flex: 1 }}>
-                  <CardImageComponent onPress={()=>navigation.navigate('TaskDetail',{
-                    id: tasks[0].id,                    
+                  <CardImageComponent onPress={() => navigation.navigate('TaskDetail', {
+                    id: tasks[0].id,
                   })}>
                     <TouchableOpacity style={[
                       globalStyle.iconContainer
                     ]}
                     >
-                      <Edit2 size={20} color={colors.white} />
+                      <Edit2 onPress={() => navigation.navigate('AddNewTask', { editable: true, task: tasks[0] })} size={20} color={colors.white} />
                     </TouchableOpacity>
-                    <TitleComponent size={18} text={tasks[0].title??''} />
-                    <TextComponent line={3} text={tasks[0].description??''} size={13} />
+                    <TitleComponent size={18} text={tasks[0].title ?? ''} />
+                    <TextComponent line={3} text={tasks[0].description ?? ''} size={13} />
                     <View style={{ marginVertical: 24 }}>
                       <AvataGroup uids={tasks[0].uids} />
                       {
                         tasks[0].progress &&
-                      (tasks[0].progress as number) >=0 ?
-                         <ProgressBarComponet percent={`${Math.floor(tasks[0].progress *100)}%`}
-                          color={'#0aacff'} size='large' />
-                      :null}
+                          (tasks[0].progress as number) >= 0 ?
+                          <ProgressBarComponet percent={`${Math.floor(tasks[0].progress * 100)}%`}
+                            color={'#0aacff'} size='large' />
+                          : null}
 
                     </View>
                     <TextComponent
@@ -147,41 +152,43 @@ const HomeScreen = ({ navigation }: any) => {
                 <View style={{ flex: 1, }}>
                   {
                     tasks[1] &&
-                    <CardImageComponent onPress={()=>navigation.navigate('TaskDetail',{
-                      id: tasks[1].id, 
-                      color: 'rgba(33,150,243,0.9)'                   
+                    <CardImageComponent onPress={() => navigation.navigate('TaskDetail', {
+                      id: tasks[1].id,
+                      color: 'rgba(33,150,243,0.9)'
                     })} color='rgba(33,150,243,0.9)'>
                       <TouchableOpacity style={[
                         globalStyle.iconContainer
                       ]}
                       >
-                        <Edit2 size={20} color={colors.white} />
+                        <Edit2 onPress={() => navigation.navigate('AddNewTask', { editable: true, task: tasks[1] })} size={20} color={colors.white} />
+
                       </TouchableOpacity>
-                      <TitleComponent size={18} text={tasks[1].title??''} />
+                      <TitleComponent size={18} text={tasks[1].title ?? ''} />
                       {tasks[1].uids && <AvataGroup uids={tasks[1].uids} />}
                       {tasks[1].progress &&
-                   <ProgressBarComponet percent={`${Math.floor(tasks[1].progress*100)}%`} color={'#a2f068'} />
+                        <ProgressBarComponet percent={`${Math.floor(tasks[1].progress * 100)}%`} color={'#a2f068'} />
                       }
-                     
+
                     </CardImageComponent>
                   }
 
                   <SpaceComponent height={16} />
                   {tasks[2] &&
                     <CardImageComponent
-                    onPress={()=>navigation.navigate('TaskDetail',{
-                      id: tasks[2].id, 
-                      color: 'rgba(18,181,122,0.9)'                   
-                    })}
-                     color='rgba(18,181,122,0.9)'>
+                      onPress={() => navigation.navigate('TaskDetail', {
+                        id: tasks[2].id,
+                        color: 'rgba(18,181,122,0.9)'
+                      })}
+                      color='rgba(18,181,122,0.9)'>
                       <TouchableOpacity style={[
                         globalStyle.iconContainer
                       ]}
                       >
-                        <Edit2 size={20} color={colors.white} />
+                        <Edit2 onPress={() => navigation.navigate('AddNewTask', { editable: true, task: tasks[2] })} size={20} color={colors.white} />
+
                       </TouchableOpacity>
-                      <TitleComponent size={18} text={tasks[2].title??''} />
-                      <TextComponent text={tasks[2].description??''} size={13} />
+                      <TitleComponent size={18} text={tasks[2].title ?? ''} />
+                      <TextComponent text={tasks[2].description ?? ''} size={13} />
 
 
                     </CardImageComponent>}
@@ -223,8 +230,8 @@ const HomeScreen = ({ navigation }: any) => {
 
       }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('AddNewTask',{
-            editable:false,task:undefined
+          onPress={() => navigation.navigate('AddNewTask', {
+            editable: false, task: undefined
           })}
           activeOpacity={1}
           style={[

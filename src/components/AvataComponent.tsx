@@ -4,6 +4,7 @@ import firestore from '@react-native-firebase/firestore'
 import { colors } from '../constants/colors'
 import { globalStyle } from '../style/globalStyle'
 import { fontFamily } from '../constants/fontFamilies'
+import { UserDetail } from '../models/UserDetail'
 
 interface Props {
     uid: string,
@@ -11,7 +12,7 @@ interface Props {
 }
 const AvataComponent = (props: Props) => {
     const { uid, index } = props;
-    const [userDetail, setUserDetail] = useState<any>()
+    const [userDetail, setUserDetail] = useState<UserDetail>()
     useEffect(() => {
         firestore()
             .doc(`users/${uid}`)
@@ -53,7 +54,7 @@ const AvataComponent = (props: Props) => {
                         globalStyle.text,
                         {fontFamily:fontFamily.bold,fontSize:14}
                     ]}>
-                        {userDetail.name.substring(0,1)}
+                        {userDetail.displayName.substring(0,1).toLocaleUpperCase()}
                     </Text>
 
                 </View >

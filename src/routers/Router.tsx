@@ -34,8 +34,8 @@ const Router = () => {
         <Stack.Screen name='SignInScreen' component={SignInScreen} />
         
     </Stack.Navigator>
-   // return isLogin?MainRouter:AuthRouter;
-    return MainRouter;
+    return isLogin?MainRouter:AuthRouter;
+   // return MainRouter;
 }
 
 

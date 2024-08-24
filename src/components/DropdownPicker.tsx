@@ -68,6 +68,7 @@ const DropdownPicker = (props: Props) => {
   }
   const renderSelectedItem = (id: string, index: number) => {
     const item = items.find(element => element.value === id)
+
     return item &&
       <RowComponent onPress={() => removeSelectedItem(index)} styles={{
         marginRight: 4,
@@ -125,13 +126,18 @@ const DropdownPicker = (props: Props) => {
                   prefix={<SearchNormal1 size={20} color={colors.gray2} />}
                   onChange={val => setSearchKey(val)} />
               </View>
-              <TouchableOpacity onPress={() => { setIsVisible(false), setdataSelected([]) }}>
+              <TouchableOpacity style={{
+                justifyContent:'center',
+                alignItems:'center',
+                marginLeft:10
+              }} onPress={() => { setIsVisible(false), setdataSelected([]) }}>
                 <TextComponent flex={0} text='Cancel' color='coral' />
               </TouchableOpacity>
             </RowComponent>}
             style={{ flex: 1 }}
             data={searchKey ? results : items}
-            renderItem={({ item }) => (
+            renderItem={({ item }) => 
+            (
               <RowComponent onPress={() => handleSelectedItem(item.value)} styles={{
                 paddingVertical: 16,
               }}>
@@ -141,7 +147,8 @@ const DropdownPicker = (props: Props) => {
 
                 }
               </RowComponent>
-            )}
+            )
+            }
 
 
           />

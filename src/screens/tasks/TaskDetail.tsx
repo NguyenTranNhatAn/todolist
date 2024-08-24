@@ -58,7 +58,7 @@ const TaskDetail = ({ navigation, route }: any) => {
   useEffect(()=>{
  if (subTask.length>0) {
   const completedPercent = (subTask.filter(element=>element.isComplete)).length/subTask.length
-  console.log(completedPercent)
+
   setProgress(completedPercent);
  }
   },[subTask])

@@ -56,7 +56,7 @@ const UploadFileComponent = (props: Props) => {
       }, (error) => {
         console.log('up',error)
       }, () => {
-        //get download url
+        
         storage().ref(path).getDownloadURL().then(url => {
           const data: Attachment = {
             name: file.name ?? '',
@@ -79,7 +79,7 @@ const UploadFileComponent = (props: Props) => {
       }).then(res => {
         setFile(res[0])
 
-      })}>
+      }).catch(er=>console.log(er))}>
         <DocumentUpload color={colors.white} size={24} />
       </TouchableOpacity>
       <Modal visible={isVisible}

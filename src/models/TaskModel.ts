@@ -6,6 +6,8 @@ export interface TaskModel{
     start:any,
     end:any,
     uids:string[],
+    createAt?:number,
+    updateAt?:number,
     color?:string,
     attachments:Attachment[],
     progress?:number;

@@ -12,6 +12,8 @@ import ButtonComponent from '../../components/ButtonComponent'
 import SpaceComponent from '../../components/SpaceComponent'
 import { globalStyle } from '../../style/globalStyle'
 import auth from '@react-native-firebase/auth'
+import { HandleUser } from '../../utils/handleUser'
+
 const SignInScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -26,8 +28,8 @@ const SignInScreen = ({ navigation }: any) => {
             setIsLoading(true)
             await auth().createUserWithEmailAndPassword(email,password).then(userCredential=>{
                 const user= userCredential.user
+                HandleUser.SaveToDataBase(user);
                 console.log(user)
-                //save user to firestore
                 setIsLoading(false)
             }).catch((error:any) =>{
                 setIsLoading(false)

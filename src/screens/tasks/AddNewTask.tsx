@@ -1,4 +1,4 @@
-import { View, Text, Button, Platform, PermissionsAndroid } from 'react-native'
+import { View, Text, Button, Platform, PermissionsAndroid, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Container from '../../components/Container'
 import TextComponent from '../../components/TextComponent'
@@ -20,27 +20,33 @@ import DocumentPicker, { DocumentPickerOptions, DocumentPickerResponse } from 'r
 import RNFetchBlob from 'rn-fetch-blob'
 import UploadFileComponent from '../../components/UploadFileComponent'
 import { fontFamily } from '../../constants/fontFamilies'
+import auth from '@react-native-firebase/auth'
 
 const initValue: TaskModel = {
   title: '',
   description: '',
-  dueDate: new Date(),
-  start: new Date(),
-  end: new Date(),
+  dueDate:undefined,
+  start: undefined,
+  end: undefined,
   uids: [],
   attachments: [],
+  createAt: Date.now(),
+  updateAt: Date.now()
 }
 
 
-const AddNewTask = ({ navigation ,route}: any) => {
+const AddNewTask = ({ navigation, route }: any) => {
 
   const { editable, task }: { editable: Boolean, task?: TaskModel } = route.params;
   const [taskDetail, setTaskDetail] = useState<TaskModel>(initValue);
   const [usersSelect, setUsersSelect] = useState<SelectModel[]>([]);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
- 
+
   const [byteTransferented, setByteTransferented] = useState(0)
-  
+
+
+  const user = auth().currentUser;
+
 
   useEffect(() => {
 
@@ -54,7 +60,24 @@ const AddNewTask = ({ navigation ,route}: any) => {
     handleGetAllUsers();
   }, [])
 
+  useEffect(() => {
+    user && setTaskDetail({ ...taskDetail, uids: [user.uid] })
+  }, [user])
+
+  useEffect(() => {
+    
+    task &&
+      setTaskDetail({
+        ...taskDetail,
+        title: task.title,
+        description:task.description,
+        uids:task.uids
+      })
+  
+      
+  }, [task])
   const handleGetAllUsers = async () => {
+
     await firestore().collection('users').get().then(snap => {
       if (snap.empty) {
         console.log('Users data not found')
@@ -62,7 +85,7 @@ const AddNewTask = ({ navigation ,route}: any) => {
         const items: SelectModel[] = []
         snap.forEach(item => {
           items.push({
-            label: item.data().name,
+            label: item.data().displayName,
             value: item.id
           })
 
@@ -81,14 +104,32 @@ const AddNewTask = ({ navigation ,route}: any) => {
     setTaskDetail(item)
   };
   const handleAddNewTask = async () => {
-    const data = {
-      ...taskDetail,
-       attachments
+    if (user) {
+
+      const data = {
+        ...taskDetail,
+        attachments,
+        createAt:task?task.createAt:Date.now(),
+        updateAt:Date.now()
+      }
+      console.log(data)
+      if (task) {
+        await firestore().doc(`tasks/${task.id}`).update(data).then(()=>{
+          console.log('update')
+          navigation.goBack()
+        })
+      }
+      else{
+
+        await firestore().collection('tasks').add(data).then(() => {
+          console.log('thanhcong')
+          navigation.goBack()
+        }).catch(error => console.log(error))
+      }
+    
+    } else {
+      Alert.alert('You not login!!')
     }
-    await firestore().collection('tasks').add(data).then(() => {
-      console.log('thanhcong')
-      navigation.goBack()
-    }).catch(error => console.log(error))
   }
 
   // console.log(attachmentUrl)
@@ -143,14 +184,14 @@ const AddNewTask = ({ navigation ,route}: any) => {
           title='Members' />
         <View>
           <RowComponent styles={{
-            alignItems:'center',
-            justifyContent:'flex-start',
-            
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+
           }}  >
 
             <TextComponent size={16} font={fontFamily.bold} flex={0} text='Attachments' />
             <SpaceComponent width={8} />
-            <UploadFileComponent onUpload={file=>file && setAttachments([...attachments,file])}/>
+            <UploadFileComponent onUpload={file => file && setAttachments([...attachments, file])} />
           </RowComponent>
           {
             attachments.length > 0 && attachments.map((item, index) =>
@@ -162,7 +203,7 @@ const AddNewTask = ({ navigation ,route}: any) => {
         </View>
       </SectionComponent>
       <SectionComponent>
-        <ButtonComponent text='save' onPress={() => handleAddNewTask()} />
+        <ButtonComponent text={task?'Update':'Save'} onPress={() => handleAddNewTask()} />
       </SectionComponent>
 
     </Container>
