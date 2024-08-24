@@ -22,27 +22,39 @@ import ProgressBarComponet from '../../components/ProgressBarComponent'
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
 import { TaskModel } from '../../models/TaskModel'
-const HomeScreen = ({ navigation }: any) => {
+import { monthNames } from '../../utils/appInfo'
+import { useFocusEffect } from '@react-navigation/native'
+const HomeScreen = ({ navigation , route}: any) => {
   const user = auth().currentUser;
+
   const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<TaskModel[]>([]);
-  const [urgentTask, setUrgentTask] = useState<TaskModel[]>([])
+  const [urgentTask, setUrgentTask] = useState<TaskModel[]>([]);
+  const date= new Date();
+
   useEffect(() => {
-    getNewTask();
-    getUrgentsTask()
+   getTask()
+  }, []);
+  
+  useEffect(() => {
+    if(tasks.length>0){
+      const items=tasks.filter(element=>element.isUrgent)
+      setUrgentTask(items)
+    }
+  }, [tasks])
 
-  }, [])
-
-  const getNewTask = async () => {
+  const getTask =  () => {
     setIsLoading(true);
-    await
+    
       firestore().
         collection('tasks')
         .where('uids', 'array-contains', user?.uid)
-        .limit(3)
         .onSnapshot(snap => {
           if (snap.empty) {
             console.log('Task not found')
+            setTasks([
+              
+            ])
             setIsLoading(false)
           }
           else {
@@ -54,36 +66,21 @@ const HomeScreen = ({ navigation }: any) => {
                 ...item.data(),
               })
 
+              setTasks(items.sort((a: any, b: any) => a.createdAt - b.createdAt));
             }
             );
-            setIsLoading(false);
-            setTasks(items);
-
-
           }
+          setIsLoading(false);
         })
   }
-  const getUrgentsTask = () => {
-    const filter = firestore().collection('tasks').where('uids','array-contains', user?.uid).where('isUrgent', '==', true);
-    filter.onSnapshot(snap => {
-      if (!snap.empty) {
-        const items: TaskModel[] = []
-        snap.forEach((item: any) => {
-          items.push({
-            id: item.id,
-            ...item.data()
-          })
-        })
-        
-        setUrgentTask(items)
-        console.log(urgentTask)
-      }
-      else {
-        setUrgentTask([])
-      }
+  
 
-    })
+  const hanldeMoveToTaskDetail = (id:string,color?:string)=>{
+    navigation.navigate('TaskDetail', {
+      id,
+      color: 'rgba(33,150,243,0.9)'})
   }
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -119,32 +116,38 @@ const HomeScreen = ({ navigation }: any) => {
           </RowComponent>
         </SectionComponent>
         <SectionComponent>
-          <CardComponent>
+          <CardComponent onPress={()=> navigation.navigate('ListTask',({tasks}))}>
             <RowComponent>
               <View style={{ flex: 1 }}>
                 <TitleComponent text='Task Progress' />
-                <TextComponent text='30/40 tasks done' />
+                <TextComponent text={`${tasks.filter(element =>element.progress &&element.progress===1).length}/${tasks.length}`} />
                 <SpaceComponent height={12} />
                 <RowComponent justify='flex-start'>
-                  <TagComponent onPress={() => console.log('sayhi')} text='Match 22' />
+                  <TagComponent onPress={() => console.log('sayhi')} text={`${monthNames[date.getMonth()]} ${date.getDate()}`} />
                 </RowComponent>
               </View>
               <View >
-                <CicularComponent color={colors.blue} value={80} />
+                <CicularComponent color={colors.blue} value={tasks.length && tasks.length>0 ?Math.floor((tasks.filter(element=>element.progress && element.progress ===1).length/tasks.length)*100):0} />
               </View>
 
             </RowComponent>
           </CardComponent>
         </SectionComponent>
+        
         {
           isLoading ? <ActivityIndicator /> : tasks.length > 0
             ?
-            <SectionComponent>
+            <SectionComponent styles={{
+              marginBottom:16,
+            }}>
+              <RowComponent onPress={()=>navigation.navigate('ListTask',{
+                tasks
+              })} justify='flex-end'>
+          <TextComponent size={16} text='See all' flex={0}/>
+          </RowComponent>
               <RowComponent styles={{ alignItems: 'flex-start' }}>
                 <View style={{ flex: 1 }}>
-                  <CardImageComponent onPress={() => navigation.navigate('TaskDetail', {
-                    id: tasks[0].id,
-                  })}>
+                  <CardImageComponent onPress={() => hanldeMoveToTaskDetail(tasks[0].id as string)}>
                     <TouchableOpacity style={[
                       globalStyle.iconContainer
                     ]}
@@ -174,10 +177,7 @@ const HomeScreen = ({ navigation }: any) => {
                 <View style={{ flex: 1, }}>
                   {
                     tasks[1] &&
-                    <CardImageComponent onPress={() => navigation.navigate('TaskDetail', {
-                      id: tasks[1].id,
-                      color: 'rgba(33,150,243,0.9)'
-                    })} color='rgba(33,150,243,0.9)'>
+                    <CardImageComponent onPress={() => hanldeMoveToTaskDetail(tasks[1].id as string,'rgba(33,150,243,0.9)')} color='rgba(33,150,243,0.9)'>
                       <TouchableOpacity style={[
                         globalStyle.iconContainer
                       ]}
@@ -197,10 +197,7 @@ const HomeScreen = ({ navigation }: any) => {
                   <SpaceComponent height={16} />
                   {tasks[2] &&
                     <CardImageComponent
-                      onPress={() => navigation.navigate('TaskDetail', {
-                        id: tasks[2].id,
-                        color: 'rgba(18,181,122,0.9)'
-                      })}
+                      onPress={() => hanldeMoveToTaskDetail(tasks[2].id as string, 'rgba(18,181,122,0.9)')}
                       color='rgba(18,181,122,0.9)'>
                       <TouchableOpacity style={[
                         globalStyle.iconContainer
@@ -222,20 +219,20 @@ const HomeScreen = ({ navigation }: any) => {
 
         <SpaceComponent height={16} />
         <SectionComponent>
-        <TitleComponent
-                  font={fontFamily.bold}
-                  size={21}
-                  text='Urgents tasks' />
+          <TitleComponent
+            font={fontFamily.bold}
+            size={21}
+            text='Urgents tasks' />
           {
             urgentTask.length > 0 &&
             urgentTask.map(
               item =>
-               (
-                
-              
-                <CardComponent key={`urgent${item.id}`}>
+              (
+
+
+                <CardComponent onPress={()=>hanldeMoveToTaskDetail(item.id as string)} styles={{ marginVertical: 10, }} key={`urgent${item.id}`}>
                   <RowComponent>
-                    <CicularComponent radius={36} value={item.progress?item.progress*100:0} />
+                    <CicularComponent radius={36} value={item.progress ? item.progress * 100 : 0} />
                     <View style={{
                       flex: 1,
                       justifyContent: 'center',
@@ -245,8 +242,8 @@ const HomeScreen = ({ navigation }: any) => {
                     </View>
                   </RowComponent>
                 </CardComponent>
-              
-               )
+
+              )
             )
 
           }

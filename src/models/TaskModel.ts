@@ -6,8 +6,8 @@ export interface TaskModel{
     start:any,
     end:any,
     uids:string[],
-    createAt?:number,
-    updateAt?:number,
+    createdAt?:number,
+    updatedAt?:number,
     color?:string,
     attachments:Attachment[],
     progress?:number,
@@ -22,12 +22,12 @@ export interface Attachment {
 }
 
 export interface SubStatModel {
-    createAt: number,
+    createdAt: number,
     description: string,
     id: string,
     isComplete: boolean,
     taskId: string,
     title: string,
-    upDateAt: number,
+    upDatedAt: number,
   }
   

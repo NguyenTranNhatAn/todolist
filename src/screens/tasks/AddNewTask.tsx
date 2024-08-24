@@ -30,8 +30,8 @@ const initValue: TaskModel = {
   end: undefined,
   uids: [],
   attachments: [],
-  createAt: Date.now(),
-  updateAt: Date.now(),
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
   isUrgent:false
 }
 
@@ -110,8 +110,8 @@ const AddNewTask = ({ navigation, route }: any) => {
       const data = {
         ...taskDetail,
         attachments,
-        createAt:task?task.createAt:Date.now(),
-        updateAt:Date.now()
+        createdAt:task?task.createdAt:Date.now(),
+        updatedAt:Date.now()
       }
       console.log(data)
       if (task) {

@@ -5,7 +5,7 @@ import SectionComponent from '../../components/SectionComponent';
 import TextComponent from '../../components/TextComponent';
 import { StatusBar } from 'react-native';
 import RowComponent from '../../components/RowComponent';
-import { AddSquare, ArrowLeft2, CalendarEdit, Clock, DocumentUpload, TickCircle, TickSquare } from 'iconsax-react-native';
+import { AddSquare, ArrowLeft2, CalendarEdit, Clock, DocumentUpload, RowHorizontal, TickCircle, TickSquare } from 'iconsax-react-native';
 import { colors } from '../../constants/colors';
 import firestore from '@react-native-firebase/firestore'
 import { Attachment, SubStatModel, TaskModel } from '../../models/TaskModel';
@@ -76,7 +76,7 @@ const TaskDetail = ({ navigation, route }: any) => {
       })
   }
   const handleUpdate = async () => {
-    const data = { ...TaskDetail, progress, attachments, updateAt: Date.now() }
+    const data = { ...TaskDetail, progress, attachments, updatedAt: Date.now() }
     await firestore().doc(`tasks/${id}`).update(data).then(() => {
       Alert.alert('Task updated')
     }).catch(error => console.log(error))
@@ -123,6 +123,29 @@ const TaskDetail = ({ navigation, route }: any) => {
     } catch (error) {
       console.log(error);
     }
+  }
+  const handleRemoveTask= ()=>{
+    Alert.alert('Confirm','Are you sure, you want deleted',[
+      {
+        text:'cancel',
+        style:'cancel',
+        onPress:()=>console.log('Cancel')
+      },
+      {
+        text:'Delete',
+        style:'destructive',
+        onPress: async()=>{
+          await
+          firestore().
+          doc(`tasks/${id}`).delete().then(()=>{
+         
+            navigation.goBack()
+
+          }).catch(err=>console.log(err))
+
+        }
+      }
+    ])
   }
 
   return TaskDetail ? (
@@ -270,7 +293,7 @@ const TaskDetail = ({ navigation, route }: any) => {
                 <View style={{ flex: 1, marginLeft: 12 }}>
 
                   <TextComponent text={item.title} />
-                  <TextComponent size={12} color='#e0e0e0' text={HandleDateTime.DateString(item.createAt)} />
+                  <TextComponent size={12} color='#e0e0e0' text={HandleDateTime.DateString(item.createdAt)} />
                 </View>
               </RowComponent>
             </CardComponent>)
@@ -278,7 +301,15 @@ const TaskDetail = ({ navigation, route }: any) => {
 
 
         </SectionComponent>
+        <SectionComponent>
+          <RowComponent onPress={()=>handleRemoveTask()}>
+
+            <TextComponent text='Delete task' flex={0} color='red' />
+
+          </RowComponent>
+        </SectionComponent>
       </ScrollView>
+
       {
         ischange &&
         <View style={{

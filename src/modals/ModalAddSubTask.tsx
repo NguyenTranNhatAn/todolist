@@ -31,8 +31,8 @@ const ModalAddSubTask = (props: Props) => {
   const handleSavetoDataBase =  async() => {
     const data ={
       ...subTaskForm,
-      createAt: Date.now(),
-      upDateAt: Date.now(),
+      createdAt: Date.now(),
+      upDatedAt: Date.now(),
       taskId,
 
     }
