@@ -26,9 +26,10 @@ const HomeScreen = ({ navigation }: any) => {
   const user = auth().currentUser;
   const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<TaskModel[]>([]);
-
+  const [urgentTask, setUrgentTask] = useState<TaskModel[]>([])
   useEffect(() => {
     getNewTask();
+    getUrgentsTask()
 
   }, [])
 
@@ -61,6 +62,27 @@ const HomeScreen = ({ navigation }: any) => {
 
           }
         })
+  }
+  const getUrgentsTask = () => {
+    const filter = firestore().collection('tasks').where('uids','array-contains', user?.uid).where('isUrgent', '==', true);
+    filter.onSnapshot(snap => {
+      if (!snap.empty) {
+        const items: TaskModel[] = []
+        snap.forEach((item: any) => {
+          items.push({
+            id: item.id,
+            ...item.data()
+          })
+        })
+        
+        setUrgentTask(items)
+        console.log(urgentTask)
+      }
+      else {
+        setUrgentTask([])
+      }
+
+    })
   }
 
   return (
@@ -188,7 +210,7 @@ const HomeScreen = ({ navigation }: any) => {
 
                       </TouchableOpacity>
                       <TitleComponent size={18} text={tasks[2].title ?? ''} />
-                      <TextComponent text={tasks[2].description ?? ''} size={13} />
+                      <TextComponent line={3} text={tasks[2].description ?? ''} size={13} />
 
 
                     </CardImageComponent>}
@@ -200,22 +222,34 @@ const HomeScreen = ({ navigation }: any) => {
 
         <SpaceComponent height={16} />
         <SectionComponent>
-          <TitleComponent
-            font={fontFamily.bold}
-            size={21}
-            text='Urgents tasks' />
-          <CardComponent>
-            <RowComponent>
-              <CicularComponent radius={36} value={80} />
-              <View style={{
-                flex: 1,
-                justifyContent: 'center',
-                paddingLeft: 12,
-              }}>
-                <TextComponent text='nhâtna' />
-              </View>
-            </RowComponent>
-          </CardComponent>
+        <TitleComponent
+                  font={fontFamily.bold}
+                  size={21}
+                  text='Urgents tasks' />
+          {
+            urgentTask.length > 0 &&
+            urgentTask.map(
+              item =>
+               (
+                
+              
+                <CardComponent key={`urgent${item.id}`}>
+                  <RowComponent>
+                    <CicularComponent radius={36} value={item.progress?item.progress*100:0} />
+                    <View style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                      paddingLeft: 12,
+                    }}>
+                      <TextComponent text={item.title} />
+                    </View>
+                  </RowComponent>
+                </CardComponent>
+              
+               )
+            )
+
+          }
         </SectionComponent>
 
       </Container>

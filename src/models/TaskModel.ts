@@ -10,7 +10,8 @@ export interface TaskModel{
     updateAt?:number,
     color?:string,
     attachments:Attachment[],
-    progress?:number;
+    progress?:number,
+    isUrgent:boolean,
 
 }
 export interface Attachment {

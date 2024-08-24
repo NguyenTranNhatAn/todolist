@@ -31,7 +31,8 @@ const initValue: TaskModel = {
   uids: [],
   attachments: [],
   createAt: Date.now(),
-  updateAt: Date.now()
+  updateAt: Date.now(),
+  isUrgent:false
 }
 
 

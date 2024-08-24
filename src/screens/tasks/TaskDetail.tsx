@@ -5,7 +5,7 @@ import SectionComponent from '../../components/SectionComponent';
 import TextComponent from '../../components/TextComponent';
 import { StatusBar } from 'react-native';
 import RowComponent from '../../components/RowComponent';
-import { AddSquare, ArrowLeft2, CalendarEdit, Clock, DocumentUpload, TickCircle } from 'iconsax-react-native';
+import { AddSquare, ArrowLeft2, CalendarEdit, Clock, DocumentUpload, TickCircle, TickSquare } from 'iconsax-react-native';
 import { colors } from '../../constants/colors';
 import firestore from '@react-native-firebase/firestore'
 import { Attachment, SubStatModel, TaskModel } from '../../models/TaskModel';
@@ -30,7 +30,8 @@ const TaskDetail = ({ navigation, route }: any) => {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [subTask, setSubTask] = useState<SubStatModel[]>([]);
   const [ischange, setIschange] = useState(false);
-  const [isVisibleSubTask, setIsVisibleSubTask] = useState(false)
+  const [isVisibleSubTask, setIsVisibleSubTask] = useState(false);
+  const [isUrgent, setisUrgent] = useState(false)
   useEffect(() => {
     getTaskDetail()
     getSubTabById()
@@ -40,6 +41,7 @@ const TaskDetail = ({ navigation, route }: any) => {
     if (TaskDetail) {
       setProgress(TaskDetail.progress ?? 0)
       setAttachments(TaskDetail.attachments)
+      setisUrgent(TaskDetail.isUrgent)
 
     }
   }, [TaskDetail])
@@ -55,14 +57,24 @@ const TaskDetail = ({ navigation, route }: any) => {
   }, [progress, TaskDetail, attachments])
 
 
-  useEffect(()=>{
- if (subTask.length>0) {
-  const completedPercent = (subTask.filter(element=>element.isComplete)).length/subTask.length
 
-  setProgress(completedPercent);
- }
-  },[subTask])
 
+  useEffect(() => {
+    if (subTask.length > 0) {
+      const completedPercent = (subTask.filter(element => element.isComplete)).length / subTask.length
+
+      setProgress(completedPercent);
+    }
+  }, [subTask])
+
+  const handleUpdateUrgent = () => {
+    firestore()
+      .doc(`tasks/${id}`)
+      .update({
+        isUrgent: !isUrgent,
+        updatedAt: Date.now()
+      })
+  }
   const handleUpdate = async () => {
     const data = { ...TaskDetail, progress, attachments, updateAt: Date.now() }
     await firestore().doc(`tasks/${id}`).update(data).then(() => {
@@ -89,7 +101,7 @@ const TaskDetail = ({ navigation, route }: any) => {
   const getSubTabById = () => {
     firestore().collection('subTasks').where('taskId', '==', id).onSnapshot(snap => {
       if (snap.empty) {
-        console.log('Data not found')
+        // console.log('Data not found')
       }
       else {
         const items: SubStatModel[] = [];
@@ -105,14 +117,14 @@ const TaskDetail = ({ navigation, route }: any) => {
 
   }
 
-const handleUpdateSubTask = async(id:string,isComplete:boolean)=>{
- try {
-  await firestore().doc(`subTasks/${id}`).update({isComplete:!isComplete})
- } catch (error) {
-  console.log(error);
- }
-}
-  
+  const handleUpdateSubTask = async (id: string, isComplete: boolean) => {
+    try {
+      await firestore().doc(`subTasks/${id}`).update({ isComplete: !isComplete })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return TaskDetail ? (
     <>
       <ScrollView style={{ flex: 1, backgroundColor: colors.bgcolor }}>
@@ -131,7 +143,7 @@ const handleUpdateSubTask = async(id:string,isComplete:boolean)=>{
               <ArrowLeft2 size={26} color={colors.text} />
             </TouchableOpacity>
             <SpaceComponent width={12} />
-            <TitleComponent size={22} flex={1} styles={{
+            <TitleComponent line={1} size={22} flex={1} styles={{
               paddingTop: 6,
               lineHeight: 25, marginBottom: 0
             }}
@@ -171,6 +183,12 @@ const handleUpdateSubTask = async(id:string,isComplete:boolean)=>{
             <TextComponent text={TaskDetail.description} />
 
           </CardComponent>
+        </SectionComponent>
+        <SectionComponent>
+          <RowComponent onPress={handleUpdateUrgent}>
+            <TickSquare variant={isUrgent ? 'Bold' : 'Outline'} style={{ marginRight: 10 }} size={24} color={colors.white} />
+            <TextComponent size={18} font={fontFamily.bold} text={'Is Urgent'} />
+          </RowComponent>
         </SectionComponent>
         <SectionComponent>
           <RowComponent>
@@ -213,7 +231,7 @@ const handleUpdateSubTask = async(id:string,isComplete:boolean)=>{
           <RowComponent>
             <View style={{ flex: 1 }}>
               <Slider
-              disabled
+                disabled
                 value={progress}
                 thumbStyle={{
                   borderWidth: 2,
@@ -246,13 +264,13 @@ const handleUpdateSubTask = async(id:string,isComplete:boolean)=>{
             subTask.length > 0 &&
 
             subTask.map((item, index) => <CardComponent styles={{ marginBottom: 12 }} key={`subTask${index}`}>
-              <RowComponent onPress={()=>handleUpdateSubTask(item.id,item.isComplete)}>
-                <TickCircle variant={item.isComplete?'Bold':'Outline'} size={22} color={colors.success} />
+              <RowComponent onPress={() => handleUpdateSubTask(item.id, item.isComplete)}>
+                <TickCircle variant={item.isComplete ? 'Bold' : 'Outline'} size={22} color={colors.success} />
                 <SpaceComponent width={10} />
-                <View style={{flex:1,marginLeft:12}}>
+                <View style={{ flex: 1, marginLeft: 12 }}>
 
-                <TextComponent  text={item.title} />
-                <TextComponent size={12} color='#e0e0e0' text={HandleDateTime.DateString(item.createAt)} />
+                  <TextComponent text={item.title} />
+                  <TextComponent size={12} color='#e0e0e0' text={HandleDateTime.DateString(item.createAt)} />
                 </View>
               </RowComponent>
             </CardComponent>)
